@@ -13,9 +13,9 @@
 				id="exampleInputEmail1"
 				placeholder="Enter email"
 			/>
-            <% if(typeof email !=='undefined'){ %>
-                <div class="font-text"><%= email %></div>
-            <% } %> 
+			<% if(typeof email !=='undefined'){ %>
+			<div class="font-text"><%= email %></div>
+			<% } %>
 		</div>
 		<div class="form-group">
 			<label for="exampleInputPassword1">Password</label>
@@ -26,9 +26,7 @@
 				id="exampleInputPassword1"
 				placeholder="Password"
 			/>
-            <div class="form-text">
-                <%= locals.password ? password : '' %> 
-            </div>
+			<div class="form-text"><%= locals.password ? password : '' %></div>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>
