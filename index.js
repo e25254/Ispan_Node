@@ -7,13 +7,15 @@ const app = express()
 app.set("view engine", "ejs")
 
 // routes 路由器
-app.get("/", (req, res) => {
+app.get("/a", (req, res) => {
     // res.send(`<h2>你好</h2>`)
     res.render("main", { name: "Jie" })
 })
 
-app.get("/abc", (req, res) => {
-    res.send(`<h2>abc</h2>`)
+app.get("/sales-json", (req, res) => {
+    const sales = require(__dirname + '/data/sales.json')
+    console.log(sales);
+    res.render(`sales-json`,{sales})
 })
 
 app.get('/json-test', (req, res) => {
