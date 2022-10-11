@@ -1,0 +1,39 @@
+<%- include('parts/html-head') %>
+<!--  -->
+<%- include('parts/navbar') %>
+
+<div class="container mt-5">
+	<form method="post">
+		<div class="form-group">
+			<label for="exampleInputEmail1">Email address</label>
+			<input
+				type="text"
+				name="email"
+				class="form-control"
+				id="exampleInputEmail1"
+				placeholder="Enter email"
+			/>
+            <% if(typeof email !=='undefined'){ %>
+                <div class="font-text"><%= email %></div>
+            <% } %> 
+		</div>
+		<div class="form-group">
+			<label for="exampleInputPassword1">Password</label>
+			<input
+				type="password"
+				name="password"
+				class="form-control"
+				id="exampleInputPassword1"
+				placeholder="Password"
+			/>
+            <div class="form-text">
+                <%= locals.password ? password : '' %> 
+            </div>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+
+<%- include('parts/scripts') %>
+<!--  -->
+<%- include('parts/html-foot') %>
