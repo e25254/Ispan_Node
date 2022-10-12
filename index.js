@@ -45,15 +45,15 @@ app.post("/try-post-form", (req, res) => {
 	res.render("try-post-form", req.body)
 })
 
-app.post("/try-upload", upload.single("avatar"), async (req, res) => {
-	if (req.file && req.file.originalname) {
-		await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`)
-		res.json(req.file)
-	}else{
-		res.json({msg:'沒有上傳檔案'})
-	}
-	
-})
+app.post('/try-upload', upload.single('avatar'), async (req, res) => {
+    if(req.file && req.file.originalname){
+        await fs.rename(req.file.path, `public/img/${req.file.originalname}`);
+        res.json(req.file);
+    } else {
+        res.json({msg:'沒有上傳檔案'});
+    }
+    
+});
 
 app.use(express.static(__dirname + "/public"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
