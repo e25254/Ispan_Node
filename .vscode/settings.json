@@ -1,0 +1,6 @@
+{
+	"cSpell.words": ["myimg", "Parens", "uuidv"],
+	"prettier.bracketSameLine": true,
+	"prettier.printWidth": 800,
+	"prettier.proseWrap": "never"
+}
