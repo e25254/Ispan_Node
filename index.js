@@ -3,6 +3,7 @@ require("dotenv").config()
 const express = require("express")
 const multer = require("multer")
 const upload = multer({ dest: "tmp_uploads/" })
+const fs = require("fs").promises
 
 const app = express()
 
@@ -44,8 +45,14 @@ app.post("/try-post-form", (req, res) => {
 	res.render("try-post-form", req.body)
 })
 
-app.post("/try-upload", upload.single("avatar"), (req, res) => {
-	res.json(req.file)
+app.post("/try-upload", upload.single("avatar"), async (req, res) => {
+	if (req.file && req.file.originalname) {
+		await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`)
+		res.json(req.file)
+	}else{
+		res.json({msg:'沒有上傳檔案'})
+	}
+	
 })
 
 app.use(express.static(__dirname + "/public"))
