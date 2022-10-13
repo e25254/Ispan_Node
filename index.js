@@ -60,6 +60,17 @@ app.post("/try-upload2", upload.array("photos"), async (req, res) => {
 	res.json(req.files)
 })
 
+app.get("/my-params1/:action?/:id?", async (req, res) => {
+	res.json(req.params)
+})
+
+app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i, (req, res) => {
+	let u = req.url.slice(3)
+	u = u.split("?")[0] // 去掉 query string
+	u = u.split("-").join("")
+	res.json({ mobile: u })
+})
+
 app.use(express.static(__dirname + "/public"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
 

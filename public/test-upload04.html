@@ -1,88 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/fontawesome/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>Document</title>
-    <style>
-    .photo {
-        display: inline-block;
-        position: relative;
-        width: 200px;
-        height: 200px;
-        border: 1px solid blue;
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<title>Document</title>
+		<style>
+			.photo {
+				display: inline-block;
+				position: relative;
+				width: 200px;
+				height: 200px;
+				border: 1px solid blue;
+				margin-top: 10px;
+			}
+			.photo img {
+				position: absolute;
+				width: 100%;
+			}
+			.photo .remove {
+				color: red;
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+			.photo .go_forward {
+				color: black;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+			}
+			.photo .go_back {
+				color: black;
+				position: absolute;
+				bottom: 0;
+				right: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<form name="form1">
+			<input type="file" accept="image/*" name="photos" multiple onchange="upload()" />
+		</form>
+		<div id="photo-div">
+			<!-- <div class="photo">
+				<img src="/uploads/1a3b3db0-a9b0-46b3-b15c-98190ff75269.png" alt="" />
+				<span class="remove" onclick="removeItem(event)">
+					<i class="fa-solid fa-circle-xmark"></i>
+				</span>
+				<span class="go_forward" onclick="goforward(event)">
+					<i class="fa-solid fa-arrow-left"></i>
+				</span>
+				<span class="go_back" onclick="goback(event)">
+					<i class="fa-solid fa-arrow-right"></i>
+				</span>
+			</div> -->
+		</div>
 
-    }
-    .photo img {
-        position: absolute;
-        width: 100%;
-    }
-    .photo .remove {
-        color: red;
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-    </style>
-</head>
-<body>
-    <form name="form1">
-        <input type="file" accept="image/*" name="photos"
-        multiple
-        onchange="upload()">
-    </form>
-    <div id="photo-div">
-        <!--
-        <div class="photo">
-            <img src="/uploads/1a3b3db0-a9b0-46b3-b15c-98190ff75269.png" alt="" >
-            <span class="remove" onclick="removeItem(event)">
-                <i class="fa-solid fa-circle-xmark"></i>
-            </span>
-        </div>
-    -->
-    </div>
+		<script>
+			let photoData = []
+			const photo_div = document.querySelector("#photo-div")
+			const item_tpl_func = ({ filename }) => `
+            <div class="photo" data-id="${filename}">
+                <img src="/uploads/${filename}" alt="" >
+                <span class="remove" onclick="removeItem(event)">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </span>
+                <span class="go_forward" onclick="goforward(event)">
+					<i class="fa-solid fa-arrow-left"></i>
+				</span>
+				<span class="go_back" onclick="goback(event)">
+					<i class="fa-solid fa-arrow-right"></i>
+            </div>`
+			// 生成畫面
+			function render() {
+				photo_div.innerHTML = photoData.map((obj) => item_tpl_func(obj)).join("")
+			}
 
+			async function upload() {
+				const fd = new FormData(document.form1)
 
-    <script>
-        let photoData = [];
+				const r = await fetch("/try-upload2", {
+					method: "POST",
+					body: fd,
+				})
 
-        const item_tpl_func = ({filename})=>`
-        <div class="photo" data-id="${filename}">
-            <img src="/uploads/${filename}" alt="" >
-            <span class="remove" onclick="removeItem(event)">
-                <i class="fa-solid fa-circle-xmark"></i>
-            </span>
-        </div>`;
+				const result = await r.json()
+				// photoData = [...photoData, ...result];
+				photoData.push(...result)
 
-        async function upload(){
-            const fd = new FormData(document.form1);
+				console.log(result)
 
-            const r = await fetch('/try-upload2', {
-                method: 'POST',
-                body: fd
-            });
+				render()
+			}
 
-            const result = await r.json();
-            // photoData = [...photoData, ...result];
-            photoData.push(...result);
+			function removeItem(event) {
+                console.log('remove');
+				const item = event.target.closest(".photo")
+				const id = item.getAttribute("data-id")
+				console.log(id)
+				photoData = photoData.filter((obj) => obj.filename !== id)
+				render()
+			}
+			function goforward(event) {
 
-            console.log(result);
-            
-            let str = '';
-            str = photoData.map( obj=> item_tpl_func(obj) ).join('');
-            document.querySelector('#photo-div').innerHTML = str;
+				const item = event.target.closest(".photo")
+				const id = item.getAttribute("data-id")
+				const index = getItemIndex(id)
+				if (index <= 0) return
+				const [currentItem] = photoData.splice(index, 1)
+				photoData.splice(index - 1, 0, currentItem)
+				render()
+			}
+			function goback(event) {
+				const item = event.target.closest(".photo")
+				const id = item.getAttribute("data-id")
+				const index = getItemIndex(id)
+				if (index >= photoData.length) return
 
-        }
-
-        function removeItem(event) {
-            const item = event.target.closest('.photo');
-            const id = item.getAttribute('data-id');
-            console.log(id);
-            item.remove();
-        }
-    </script>
-</body>
+				const [currentItem] = photoData.splice(index, 1)
+				photoData.splice(index + 1, 0, currentItem)
+				render()
+			}
+			function getItemIndex(id) {
+				for (let i = 0; i < photoData.length; i++) {
+					const item = photoData[i]
+					if (item.filename === id) return i
+				}
+				return -1
+			}
+		</script>
+	</body>
 </html>
