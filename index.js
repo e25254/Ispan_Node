@@ -4,6 +4,7 @@ const express = require("express")
 const session = require("express-session")
 const MysqlStore = require("express-mysql-session")(session)
 const moment = require("moment-timezone")
+const router = require("./routes/address_book")
 const db = require(__dirname + "/modules/db_connect2")
 const sessionStore = new MysqlStore({}, db)
 
@@ -141,9 +142,11 @@ app.get("/try-db-add2", async (req, res) => {
 	const birthday = "1990-02-07"
 	const address = "宜蘭市"
 	const sql = "INSERT INTO `address_book` SET ?"
-	const [result] = await db.query(sql, [{name, email, mobile, birthday, address, created_at: new Date()}])
+	const [result] = await db.query(sql, [{ name, email, mobile, birthday, address, created_at: new Date() }])
 	res.json(result)
 })
+
+app.use("/ab", require(__dirname + "/routes/address_book"))
 
 app.use(express.static(__dirname + "/public"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
