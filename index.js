@@ -134,6 +134,16 @@ app.get("/try-db-add", async (req, res) => {
 	const [result] = await db.query(sql, [name, email, mobile, birthday, address])
 	res.json(result)
 })
+app.get("/try-db-add2", async (req, res) => {
+	const name = "你全家都林克"
+	const email = "link@gmail.com"
+	const mobile = "0929222666"
+	const birthday = "1990-02-07"
+	const address = "宜蘭市"
+	const sql = "INSERT INTO `address_book` SET ?"
+	const [result] = await db.query(sql, [{name, email, mobile, birthday, address, created_at: new Date()}])
+	res.json(result)
+})
 
 app.use(express.static(__dirname + "/public"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
