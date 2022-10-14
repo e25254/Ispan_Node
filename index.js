@@ -1,6 +1,10 @@
 require("dotenv").config()
 
 const express = require("express")
+const session = require("express-session")
+
+express.Jie = "您好Jie"
+
 // const multer = require("multer")
 // const upload = multer({ dest: "tmp_uploads/" })
 const upload = require(__dirname + "/modules/upload-img")
@@ -9,6 +13,15 @@ const fs = require("fs").promises
 const app = express()
 
 app.set("view engine", "ejs")
+
+app.use(
+	session({
+		saveUninitialized: false,
+		resave: false,
+		secret: "dwqlekqwekrkv23023wedfghu8790oijhjkl",
+		cookie: {},
+	})
+)
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
@@ -73,18 +86,24 @@ app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i, (req, res) => {
 
 app.use("/admin2", require(__dirname + "/routes/admin2.js"))
 
-app.use(express.static(__dirname + "/public"))
-app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
-
 const myMiddle = (req, res, next) => {
 	res.locals = { ...res.locals, Jie: "哈囉" }
-	res.locals.derrrr = 567
+	res.locals.derrrr = "123"
 	next()
 }
 
 app.get("/try-middle", [myMiddle], (req, res) => {
 	res.json(res.locals)
 })
+
+app.get("/try-session", (req, res) => {
+	req.session.aaa ||= 0
+	req.session.aaa++
+	res.json(req.session)
+})
+
+app.use(express.static(__dirname + "/public"))
+app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
 
 app.use((req, res) => {
 	// res.type("text/plain")
