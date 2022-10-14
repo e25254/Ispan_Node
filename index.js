@@ -71,10 +71,20 @@ app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i, (req, res) => {
 	res.json({ mobile: u })
 })
 
-app.use('/admin2',require(__dirname + "/routes/admin2.js"))
+app.use("/admin2", require(__dirname + "/routes/admin2.js"))
 
 app.use(express.static(__dirname + "/public"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"))
+
+const myMiddle = (req, res, next) => {
+	res.locals = { ...res.locals, Jie: "哈囉" }
+	res.locals.derrrr = 567
+	next()
+}
+
+app.get("/try-middle", [myMiddle], (req, res) => {
+	res.json(res.locals)
+})
 
 app.use((req, res) => {
 	// res.type("text/plain")
