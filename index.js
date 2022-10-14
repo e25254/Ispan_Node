@@ -2,7 +2,10 @@ require("dotenv").config()
 
 const express = require("express")
 const session = require("express-session")
+const MysqlStore = require("express-mysql-session")(session)
 const moment = require("moment-timezone")
+const db = require(__dirname + "/modules/db_connect2")
+const sessionStore = new MysqlStore({}, db)
 
 express.Jie = "您好Jie"
 
@@ -20,6 +23,7 @@ app.use(
 		saveUninitialized: false,
 		resave: false,
 		secret: "dwqlekqwekrkv23023wedfghu8790oijhjkl",
+		store: sessionStore,
 		cookie: {
 			maxAge: 1_200_000,
 		},
@@ -106,18 +110,29 @@ app.get("/try-session", (req, res) => {
 })
 
 app.get("/try-date", (req, res) => {
-	const now = new Date()
-	const m = moment()
+	const fm = "YYYY-MM-DD HH:mm:ss"
+	const m = moment("06/10/22", "DD/MM/YY")
 
-	res.send({
-		t1: now,
-		t2: now.toString(),
-		t3: now.toDateString(),
-		t4: now.toLocaleString(),
-		t5: now.toLocaleTimeString(),
-		t6: now.toLocaleDateString(),
-		t7: m.format("YYYY-MM-DD HH:mm:ss"),
+	res.json({
+		m,
+		m1: m.format(fm),
+		m2: m.tz("Europe/London").format(fm),
 	})
+})
+
+app.get("/try-db", async (req, res) => {
+	const [rows] = await db.query("SELECT * FROM `address_book` WHERE 1 ORDER BY sid DESC ")
+	res.json(rows)
+})
+app.get("/try-db-add", async (req, res) => {
+	const name = "你才是林克"
+	const email = "link@gmail.com"
+	const mobile = "0929222666"
+	const birthday = "1990-02-07"
+	const address = "宜蘭市"
+	const sql = "INSERT INTO `address_book`(`name`,`email`,`mobile`,`birthday`,`address`,`created_at`)VALUES(?,?,?,?,?,NOW())"
+	const [result] = await db.query(sql, [name, email, mobile, birthday, address])
+	res.json(result)
 })
 
 app.use(express.static(__dirname + "/public"))
