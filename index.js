@@ -2,6 +2,7 @@ require("dotenv").config()
 
 const express = require("express")
 const session = require("express-session")
+const moment = require("moment-timezone")
 
 express.Jie = "您好Jie"
 
@@ -19,7 +20,9 @@ app.use(
 		saveUninitialized: false,
 		resave: false,
 		secret: "dwqlekqwekrkv23023wedfghu8790oijhjkl",
-		cookie: {},
+		cookie: {
+			maxAge: 1_200_000,
+		},
 	})
 )
 
@@ -100,6 +103,21 @@ app.get("/try-session", (req, res) => {
 	req.session.aaa ||= 0
 	req.session.aaa++
 	res.json(req.session)
+})
+
+app.get("/try-date", (req, res) => {
+	const now = new Date()
+	const m = moment()
+
+	res.send({
+		t1: now,
+		t2: now.toString(),
+		t3: now.toDateString(),
+		t4: now.toLocaleString(),
+		t5: now.toLocaleTimeString(),
+		t6: now.toLocaleDateString(),
+		t7: m.format("YYYY-MM-DD HH:mm:ss"),
+	})
 })
 
 app.use(express.static(__dirname + "/public"))
