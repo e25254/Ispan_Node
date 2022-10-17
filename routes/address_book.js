@@ -6,7 +6,7 @@ router.use((req, res, next) => {
 	next();
 });
 
-router.get("/", async (req, res) => {
+router.get(["/", "list"], async (req, res) => {
 	const perPage = 10;
 	let page = +req.query.page || 1;
 	if (page < 1) {
@@ -26,7 +26,9 @@ router.get("/", async (req, res) => {
 
 		[rows] = await db.query(sql);
 	}
-	res.json({ totalRows, totalPages, perPage, page, rows });
+
+	// res.json({ totalRows, totalPages, perPage, page, rows });
+	res.render("address_book/list", { totalRows, totalPages, perPage, page, rows });
 });
 
 module.exports = router;
