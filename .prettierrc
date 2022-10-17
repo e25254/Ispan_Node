@@ -2,7 +2,7 @@
 	"tabWidth": 4,
 	"useTabs": true,
 	"printWidth": 3000,
-	"semi": false,
+	"semi": true,
 	"bracketSpacing": true,
 	"arrowParens": "always"
 }
