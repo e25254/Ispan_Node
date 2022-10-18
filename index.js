@@ -21,9 +21,9 @@ const app = express();
 app.set("view engine", "ejs");
 
 const corsOptions = {
-	credentials:true,
+	credentials: true,
 	origin: function (origin, callback) {
-		console.log({origin});
+		console.log({ origin });
 		callback(null, true);
 	},
 };
@@ -52,6 +52,7 @@ app.use((req, res, next) => {
 	res.locals.toDatetimeString = (d) => {
 		return moment(d).format("YYYY-MM-DD HH:mm:ss");
 	};
+	res.locals.title = "JIE的網站";
 	next();
 });
 

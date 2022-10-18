@@ -48,51 +48,57 @@
 	//     const usp = new URLSearchParams(fd)
 	//     console.log(usp.toString());
 
-	    // fetch('',{
-	    //     method:'POST',
-	    //     body:usp.toString(),
-	    //     headers:{
-	    //         'Content-Type': 'application/x-www-form-urlencoded'
-	    //     }
-	    // }).then(r=>r.json())
-	    // .then(result=>{
-	    //     console.log(result);
-	    // })
+	// fetch('',{
+	//     method:'POST',
+	//     body:usp.toString(),
+	//     headers:{
+	//         'Content-Type': 'application/x-www-form-urlencoded'
+	//     }
+	// }).then(r=>r.json())
+	// .then(result=>{
+	//     console.log(result);
+	// })
 	// }
 
-	// json
-	function checkForm(event) {
-		event.preventDefault();
-		const fd = new FormData(document.form1);
-		const data = {};
-		for (let [k, v] of fd) {
-			console.log({ k, v });
-			data[k] = v;
-		}
-        fetch('',{
-	        method:'POST',
-	        body:JSON.stringify(data),
-	        headers:{
-	            'Content-Type': 'application/json'
-	        }
-	    }).then(r=>r.json())
-	    .then(result=>{
-	        console.log(result);
-	    })
-	}
-
-	// // multipart
-	// function checkForm(event){
-	//     event.preventDefault()
-	//     const fd = new FormData(document.form1)
+	// // json
+	// function checkForm(event) {
+	// 	event.preventDefault();
+	// 	const fd = new FormData(document.form1);
+	// 	const data = {};
+	// 	for (let [k, v] of fd) {
+	// 		console.log({ k, v });
+	// 		data[k] = v;
+	// 	}
 	//     fetch('',{
 	//         method:'POST',
-	//         body:fd
+	//         body:JSON.stringify(data),
+	//         headers:{
+	//             'Content-Type': 'application/json'
+	//         }
 	//     }).then(r=>r.json())
 	//     .then(result=>{
 	//         console.log(result);
 	//     })
 	// }
+
+	// multipart
+	function checkForm(event) {
+		event.preventDefault();
+		const fd = new FormData(document.form1);
+		fetch("", {
+			method: "POST",
+			body: fd,
+		})
+			.then((r) => r.json())
+			.then((result) => {
+				console.log(result);
+				if (result.success) {
+					location.href = "./";
+				} else {
+					alert("無法新增");
+				}
+			});
+	}
 </script>
 <!--  -->
 <%- include('./../parts/html-foot') %>
