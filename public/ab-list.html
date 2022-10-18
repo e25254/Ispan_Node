@@ -14,7 +14,7 @@
 			<div class="row">
 				<div class="col-lg-8"></div>
 				<div class="col-lg-4">
-					<form class="d-flex" role="search" onsubmit="return false">
+					<form class="d-flex" role="search" onsubmit=" doSearch(event)">
 						<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="" />
 						<button class="btn btn-outline-success" type="submit">Search</button>
 					</form>
@@ -49,7 +49,7 @@
 			</div>
 		</div>
 		<script src="/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<script>
 			const t_container = document.querySelector(".table-container");
 			const p_container = document.querySelector(".page-container");
@@ -74,8 +74,8 @@
                                     <a class="page-link" href="?page=${p}">${p}</a>
                                 </li>
                                 `;
-							}).join('')
-                        }
+							})
+							.join("")}
 
 
 
@@ -111,7 +111,7 @@
                                 <td>${el.name}</td>
                                 <td>${el.mobile}</td>
                                 <td>${el.email}</td>
-                                <td>${dayjs(el.birthday).format('YYYY-MM-DD')}</td>
+                                <td>${dayjs(el.birthday).format("YYYY-MM-DD")}</td>
                                 <td>${el.address}</td>
                             </tr>
                             `;
@@ -123,14 +123,31 @@
             `;
 			}
 
-            const search = location.search
-			fetch("/ab/api"+search)
+			const search = location.search;
+			fetch("/ab/api" + search)
 				.then((r) => r.json())
 				.then((result) => {
 					console.log(result);
 					t_container.innerHTML = renderTable(result);
 					p_container.innerHTML = renderPage(result);
 				});
+
+			function doSearch(event) {
+				event.preventDefault();
+				const f = event.currentTarget;
+				console.log({ search: f.search.value });
+				const usp = new URLSearchParams({ search: f.search.value });
+				history.pushState("", "", "?" + usp.toString());
+                console.log(location.search);
+                
+                fetch("/ab/api" + location.search)
+				.then((r) => r.json())
+				.then((result) => {
+					console.log(result);
+					t_container.innerHTML = renderTable(result);
+					p_container.innerHTML = renderPage(result);
+				});
+			}
 		</script>
 	</body>
 </html>
