@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require(__dirname + "/../modules/db_connect2");
+const upload = require(__dirname + "/../modules/upload-img");
 
 router.use((req, res, next) => {
 	next();
@@ -45,6 +46,13 @@ async function getListData(req, res) {
 	return { totalRows, totalPages, perPage, page, rows, search, query: req.query };
 	// res.render("address_book/list", { totalRows, totalPages, perPage, page, rows , search , query:req.query });
 }
+
+router.get("/add", async (req, res) => {
+	res.render("address_book/add");
+});
+router.post("/add", upload.none(), async (req, res) => {
+	res.send(req.body);
+});
 
 router.get(["/", "list"], async (req, res) => {
 	const data = await getListData(req, res);

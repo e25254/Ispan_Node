@@ -5,165 +5,132 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<title>Document</title>
 	</head>
 
 	<body>
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-8"></div>
+				<div class="col-lg-8 pagi-container"></div>
 				<div class="col-lg-4">
-					<form class="d-flex" role="search" onsubmit=" doSearch(event)">
+					<form class="d-flex" role="search" onsubmit="doSearch(event)">
 						<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" value="" />
 						<button class="btn btn-outline-success" type="submit">Search</button>
 					</form>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col page-container">
-					<!-- <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="?search=%E8%8A%B1&amp;page=0">
-                                <i class="fa-solid fa-circle-arrow-left"></i>
-                            </a>
-                        </li>
-
-                        <li class="page-item active">
-                            <a class="page-link" href="?search=%E8%8A%B1&amp;page=1">1</a>
-                        </li>
-
-
-                        <li class="page-item ">
-                            <a class="page-link" href="?search=%E8%8A%B1&amp;page=2">
-                                <i class="fa-solid fa-circle-arrow-right"></i></a>
-                        </li>
-                    </ul>
-                </nav> -->
-				</div>
-			</div>
-
-			<div class="row">
 				<div class="col table-container"></div>
 			</div>
 		</div>
 		<script src="/js/bootstrap.bundle.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js"></script>
 		<script>
-			const t_container = document.querySelector(".table-container");
-			const p_container = document.querySelector(".page-container");
+			const t_continer = document.querySelector(".table-container");
+			const p_continer = document.querySelector(".pagi-container");
 
-			function renderPage({ page, totalPages }) {
+			function renderPagi({ page, totalPages }) {
 				return `
-			             <nav aria-label="Page navigation example">
-			                 <ul class="pagination">
-			                     <li class="page-item disabled">
-			                         <a class="page-link" href="#">
-			                             <i class="fa-solid fa-circle-arrow-left"></i>
-			                         </a>
-			                     </li>
-
-			                     ${Array(11)
-										.fill(1)
-										.map((el, i) => {
-											const p = page - 5 + i;
-											if (p < 1 || p > totalPages) return "";
-											return `
-			                             <li class="page-item ${p === page ? "active" : ""}">
-			                                 <a class="page-link" href="javascript:gotoPage(${p})">${p}</a>
-			                             </li>
-			                             `;
-										})
-										.join("")}
-
-
+            <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">
+                                <i class="fa-solid fa-circle-arrow-left"></i>
+                            </a>
+                        </li>
+                        ${Array(11)
+							.fill(1)
+							.map((el, i) => {
+								const p = page - 5 + i;
+								if (p < 1 || p > totalPages) return "";
+								return `
+                                <li class="page-item ${p === page ? "active" : ""}">
+                                    <a class="page-link" href="javascript:gotoPage(${p})">${p}</a>
+                                </li>
+                                `;
+							})
+							.join("")}
+                        
 
 
-			                     <li class="page-item ">
-			                         <a class="page-link" href="#">
-			                             <i class="fa-solid fa-circle-arrow-right"></i></a>
-			                     </li>
-			                 </ul>
-			             </nav>
-			         `;
+                        <li class="page-item ">
+                            <a class="page-link" href="#">
+                                <i class="fa-solid fa-circle-arrow-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            `;
 			}
 
 			function renderTable({ rows }) {
 				return `
-			         <table class="table table-striped table-bordered">
-			                 <thead>
-			                     <tr>
-			                         <th scope="col">#</th>
-			                         <th scope="col">姓名</th>
-			                         <th scope="col">手機</th>
-			                         <th scope="col">Email</th>
-			                         <th scope="col">生日</th>
-			                         <th scope="col">地址</th>
-			                     </tr>
-			                 </thead>
-			                 <tbody>
-			                     ${rows
-										.map((el) => {
-											return `
-			                         <tr>
-			                             <td>${el.sid}</td>
-			                             <td>${el.name}</td>
-			                             <td>${el.mobile}</td>
-			                             <td>${el.email}</td>
-			                             <td>${dayjs(el.birthday).format("YYYY-MM-DD")}</td>
-			                             <td>${el.address}</td>
-			                         </tr>
-			                         `;
-										})
-										.join("")}
-			                 </tbody>
+            <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">手機</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">生日</th>
+                            <th scope="col">地址</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows
+							.map((el) => {
+								return `
+                            <tr>
+                                <td>${el.sid}</td>
+                                <td>${el.name}</td>
+                                <td>${el.mobile}</td>
+                                <td>${el.email}</td>
+                                <td>${dayjs(el.birthday).format("YYYY-MM-DD")}</td>
+                                <td>${el.address}</td>
+                            </tr>
+                            `;
+							})
+							.join("")}
+                    </tbody>
 
-			             </table>
-			         `;
+                </table>
+            `;
 			}
 
-			async function getData() {
-				let usp = new URLSearchParams(location.search);
+			async function getDataAndRender() {
+				const usp = new URLSearchParams(location.search);
+				if (usp.get("search")) {
+					document.forms[0].search.value = usp.get("search");
+				} else {
+					document.forms[0].search.value = "";
+				}
 
 				const r = await fetch("/ab/api?" + usp.toString());
 				const result = await r.json();
 				console.log(result);
-				t_container.innerHTML = renderTable(result);
-				p_container.innerHTML = renderPage(result);
+				p_continer.innerHTML = renderPagi(result);
+				t_continer.innerHTML = renderTable(result);
 			}
-			const usp = new URLSearchParams(location.search);
-			if (usp.get("search")) {
-				document.forms[0].search.value = usp.get("search");
-			}
-			getData();
+
+			getDataAndRender(); // 一開始呼叫
 
 			function doSearch(event) {
-				event.preventDefault();
+				event.preventDefault(); // 不讓表單送出
 				const f = event.currentTarget;
-				console.log({ search: f.search.value });
 				const usp = new URLSearchParams({ search: f.search.value });
 				history.pushState("", "", "?" + usp.toString());
-				getData();
+				getDataAndRender();
 			}
 
 			function gotoPage(p) {
-				// console.log({p});
 				const usp = new URLSearchParams(location.search);
 				usp.set("page", p);
+
 				history.pushState("", "", "?" + usp.toString());
-				getData();
+				getDataAndRender();
 			}
 
-			window.addEventListener("popstate", function () {
-				const usp = new URLSearchParams(location.search);
-				if (usp.get("search")) {
-					document.forms[0].search.value = usp.get("search");
-				}else{
-                    document.forms[0].search.value = '';
-                }
-				getData();
-			});
+			window.addEventListener("popstate", getDataAndRender);
 		</script>
 	</body>
 </html>

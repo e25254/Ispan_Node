@@ -7,7 +7,7 @@ const moment = require("moment-timezone");
 const router = require("./routes/address_book");
 const db = require(__dirname + "/modules/db_connect2");
 const sessionStore = new MysqlStore({}, db);
-const cors = require('cors')
+const cors = require("cors");
 
 express.Jie = "您好Jie";
 
@@ -19,7 +19,16 @@ const fs = require("fs").promises;
 const app = express();
 
 app.set("view engine", "ejs");
-app.use(cors())
+
+const corsOptions = {
+	credentials:true,
+	origin: function (origin, callback) {
+		console.log({origin});
+		callback(null, true);
+	},
+};
+
+app.use(cors(corsOptions));
 app.use(
 	session({
 		saveUninitialized: false,

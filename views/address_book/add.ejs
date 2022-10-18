@@ -1,0 +1,57 @@
+<%- include('./../parts/html-head') %>
+<!--  -->
+<%- include('./../parts/navbar') %>
+
+<div class="container">
+	<div class="row justify-content-center my-3">
+		<div class="col-lg-6">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title">新增資料</h5>
+					<form name="form1" onsubmit="checkForm(event)" novalidate>
+						<div class="mb-3">
+							<label for="name" class="form-label">name</label>
+							<input type="text" class="form-control" id="name" name="name" required />
+						</div>
+
+						<div class="mb-3">
+							<label for="email" class="form-label">email</label>
+							<input type="email" class="form-control" id="email" name="email" />
+						</div>
+						<div class="mb-3">
+							<label for="mobile" class="form-label">mobile</label>
+							<input type="text" class="form-control" id="mobile" name="mobile" pattern="09\d{2}?\d{3}?\d{3}" />
+						</div>
+						<div class="mb-3">
+							<label for="birthday" class="form-label">birthday</label>
+							<input type="date" class="form-control" id="birthday" name="birthday" />
+						</div>
+						<div class="mb-3">
+							<label for="address" class="form-label">address</label>
+
+							<textarea class="form-control" name="address" id="address" cols="50" rows="3"></textarea>
+						</div>
+						<button type="submit" class="btn btn-primary">新增</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%- include('./../parts/scripts') %>
+<script>
+    function checkForm(event){
+        event.preventDefault()
+        const fd = new FormData(document.form1)
+        fetch('',{
+            method:'POST',
+            body:fd
+        }).then(r=>r.json())
+        .then(result=>{
+            console.log(result);
+        })
+    }
+</script>
+<!--  -->
+<%- include('./../parts/html-foot') %>
