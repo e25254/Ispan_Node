@@ -123,15 +123,6 @@
 			         `;
 			}
 
-			const search = location.search;
-			fetch("/ab/api" + search)
-				.then((r) => r.json())
-				.then((result) => {
-					console.log(result);
-					t_container.innerHTML = renderTable(result);
-					p_container.innerHTML = renderPage(result);
-				});
-
 			async function getData() {
 				let usp = new URLSearchParams(location.search);
 
@@ -141,6 +132,11 @@
 				t_container.innerHTML = renderTable(result);
 				p_container.innerHTML = renderPage(result);
 			}
+			const usp = new URLSearchParams(location.search);
+			if (usp.get("search")) {
+				document.forms[0].search.value = usp.get("search");
+			}
+			getData();
 
 			function doSearch(event) {
 				event.preventDefault();
@@ -149,15 +145,6 @@
 				const usp = new URLSearchParams({ search: f.search.value });
 				history.pushState("", "", "?" + usp.toString());
 				getData();
-				// console.log(location.search);
-
-				// fetch("/ab/api" + location.search)
-				// 	.then((r) => r.json())
-				// 	.then((result) => {
-				// 		console.log(result);
-				// 		t_container.innerHTML = renderTable(result);
-				// 		p_container.innerHTML = renderPage(result);
-				// 	});
 			}
 
 			function gotoPage(p) {
@@ -166,16 +153,11 @@
 				usp.set("page", p);
 				history.pushState("", "", "?" + usp.toString());
 				getData();
-				// console.log(location.search);
-
-				// fetch("/ab/api" + location.search)
-				// 	.then((r) => r.json())
-				// 	.then((result) => {
-				// 		console.log(result);
-				// 		t_container.innerHTML = renderTable(result);
-				// 		p_container.innerHTML = renderPage(result);
-				// 	});
 			}
+
+			window.addEventListener("popstate", function () {
+				getData();
+			});
 		</script>
 	</body>
 </html>
