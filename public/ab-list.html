@@ -56,71 +56,71 @@
 
 			function renderPage({ page, totalPages }) {
 				return `
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">
-                                <i class="fa-solid fa-circle-arrow-left"></i>
-                            </a>
-                        </li>
+			             <nav aria-label="Page navigation example">
+			                 <ul class="pagination">
+			                     <li class="page-item disabled">
+			                         <a class="page-link" href="#">
+			                             <i class="fa-solid fa-circle-arrow-left"></i>
+			                         </a>
+			                     </li>
 
-                        ${Array(11)
-							.fill(1)
-							.map((el, i) => {
-								const p = page - 5 + i;
-								if (p < 1 || p > totalPages) return "";
-								return `
-                                <li class="page-item ${p === page ? "active" : ""}">
-                                    <a class="page-link" href="?page=${p}">${p}</a>
-                                </li>
-                                `;
-							})
-							.join("")}
-
-
+			                     ${Array(11)
+										.fill(1)
+										.map((el, i) => {
+											const p = page - 5 + i;
+											if (p < 1 || p > totalPages) return "";
+											return `
+			                             <li class="page-item ${p === page ? "active" : ""}">
+			                                 <a class="page-link" href="javascript:gotoPage(${p})">${p}</a>
+			                             </li>
+			                             `;
+										})
+										.join("")}
 
 
-                        <li class="page-item ">
-                            <a class="page-link" href="#">
-                                <i class="fa-solid fa-circle-arrow-right"></i></a>
-                        </li>
-                    </ul>
-                </nav>            
-            `;
+
+
+			                     <li class="page-item ">
+			                         <a class="page-link" href="#">
+			                             <i class="fa-solid fa-circle-arrow-right"></i></a>
+			                     </li>
+			                 </ul>
+			             </nav>
+			         `;
 			}
 
 			function renderTable({ rows }) {
 				return `
-            <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">姓名</th>
-                            <th scope="col">手機</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">生日</th>
-                            <th scope="col">地址</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rows
-							.map((el) => {
-								return `
-                            <tr>
-                                <td>${el.sid}</td>
-                                <td>${el.name}</td>
-                                <td>${el.mobile}</td>
-                                <td>${el.email}</td>
-                                <td>${dayjs(el.birthday).format("YYYY-MM-DD")}</td>
-                                <td>${el.address}</td>
-                            </tr>
-                            `;
-							})
-							.join("")}
-                    </tbody>
+			         <table class="table table-striped table-bordered">
+			                 <thead>
+			                     <tr>
+			                         <th scope="col">#</th>
+			                         <th scope="col">姓名</th>
+			                         <th scope="col">手機</th>
+			                         <th scope="col">Email</th>
+			                         <th scope="col">生日</th>
+			                         <th scope="col">地址</th>
+			                     </tr>
+			                 </thead>
+			                 <tbody>
+			                     ${rows
+										.map((el) => {
+											return `
+			                         <tr>
+			                             <td>${el.sid}</td>
+			                             <td>${el.name}</td>
+			                             <td>${el.mobile}</td>
+			                             <td>${el.email}</td>
+			                             <td>${dayjs(el.birthday).format("YYYY-MM-DD")}</td>
+			                             <td>${el.address}</td>
+			                         </tr>
+			                         `;
+										})
+										.join("")}
+			                 </tbody>
 
-                </table>
-            `;
+			             </table>
+			         `;
 			}
 
 			const search = location.search;
@@ -132,21 +132,49 @@
 					p_container.innerHTML = renderPage(result);
 				});
 
+			async function getData() {
+				let usp = new URLSearchParams(location.search);
+
+				const r = await fetch("/ab/api?" + usp.toString());
+				const result = await r.json();
+				console.log(result);
+				t_container.innerHTML = renderTable(result);
+				p_container.innerHTML = renderPage(result);
+			}
+
 			function doSearch(event) {
 				event.preventDefault();
 				const f = event.currentTarget;
 				console.log({ search: f.search.value });
 				const usp = new URLSearchParams({ search: f.search.value });
 				history.pushState("", "", "?" + usp.toString());
-                console.log(location.search);
-                
-                fetch("/ab/api" + location.search)
-				.then((r) => r.json())
-				.then((result) => {
-					console.log(result);
-					t_container.innerHTML = renderTable(result);
-					p_container.innerHTML = renderPage(result);
-				});
+				getData();
+				// console.log(location.search);
+
+				// fetch("/ab/api" + location.search)
+				// 	.then((r) => r.json())
+				// 	.then((result) => {
+				// 		console.log(result);
+				// 		t_container.innerHTML = renderTable(result);
+				// 		p_container.innerHTML = renderPage(result);
+				// 	});
+			}
+
+			function gotoPage(p) {
+				// console.log({p});
+				const usp = new URLSearchParams(location.search);
+				usp.set("page", p);
+				history.pushState("", "", "?" + usp.toString());
+				getData();
+				// console.log(location.search);
+
+				// fetch("/ab/api" + location.search)
+				// 	.then((r) => r.json())
+				// 	.then((result) => {
+				// 		console.log(result);
+				// 		t_container.innerHTML = renderTable(result);
+				// 		p_container.innerHTML = renderPage(result);
+				// 	});
 			}
 		</script>
 	</body>
