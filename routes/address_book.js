@@ -47,6 +47,8 @@ async function getListData(req, res) {
 	// res.render("address_book/list", { totalRows, totalPages, perPage, page, rows , search , query:req.query });
 }
 
+// 新增資料
+
 router.get("/add", async (req, res) => {
 	res.locals.title = "新增資料 | " + res.locals.title;
 	res.render("address_book/add");
@@ -67,6 +69,17 @@ router.post("/add", upload.none(), async (req, res) => {
 		output.success = true;
 	}
 	res.json(output);
+});
+
+// 修改資料
+
+router.get("/edit/:sid", async (req, res) => {
+	const sql = "SELECT * FROM address_book WHERE sid=?";
+	const [rows] = await db.query(sql, [req.params.sid]);
+	if (!rows || !rows.length) {
+		return res.redirect(req.baseUrl); // 跳轉到列表頁
+	}
+	res.json(rows[0])
 });
 
 router.get(["/", "list"], async (req, res) => {

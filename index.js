@@ -8,6 +8,7 @@ const router = require("./routes/address_book");
 const db = require(__dirname + "/modules/db_connect2");
 const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
+const exp = require("constants");
 
 express.Jie = "您好Jie";
 
@@ -23,7 +24,7 @@ app.set("view engine", "ejs");
 const corsOptions = {
 	credentials: true,
 	origin: function (origin, callback) {
-		console.log({ origin });
+		// console.log({ origin });
 		callback(null, true);
 	},
 };
@@ -174,6 +175,7 @@ app.get("/try-db-add2", async (req, res) => {
 app.use("/ab", require(__dirname + "/routes/address_book"));
 
 app.use(express.static(__dirname + "/public"));
+// app.use(express.static(__dirname + "/node_modules/jquery/dist"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"));
 
 app.use((req, res) => {
