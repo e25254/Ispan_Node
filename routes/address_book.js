@@ -6,7 +6,7 @@ router.use((req, res, next) => {
 	next();
 });
 
-router.get(["/", "list"], async (req, res) => {
+async function getListData(req, res) {
 	const perPage = 10;
 	let page = +req.query.page || 1;
 	if (page < 1) {
@@ -16,7 +16,12 @@ router.get(["/", "list"], async (req, res) => {
 	let search = req.query.search ? req.query.search.trim() : "";
 	let where = `WHERE 1`;
 	if (search) {
-		where += ` AND \`name\` LIKE ${db.escape("%" + search + "%")} `;
+		where += ` AND 
+		(
+			\`name\` LIKE ${db.escape("%" + search + "%")}
+			or
+			\`address\` LIKE ${db.escape("%" + search + "%")}
+		) `;
 	}
 	// res.type('text/plain; charset=utf-8')
 	// return res.end(where);
@@ -37,7 +42,17 @@ router.get(["/", "list"], async (req, res) => {
 
 	// res.json({ totalRows, totalPages, perPage, page, rows });
 
-	res.render("address_book/list", { totalRows, totalPages, perPage, page, rows });
+	return { totalRows, totalPages, perPage, page, rows, search, query: req.query };
+	// res.render("address_book/list", { totalRows, totalPages, perPage, page, rows , search , query:req.query });
+}
+
+router.get(["/", "list"], async (req, res) => {
+	const data = await getListData(req, res);
+	// res.json({ totalRows, totalPages, perPage, page, rows });
+	res.render("address_book/list", data);
+});
+router.get(["/api", "/api/list"], async (req, res) => {
+	res.json(await getListData(req, res));
 });
 
 module.exports = router;
