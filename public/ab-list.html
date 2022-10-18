@@ -156,6 +156,12 @@
 			}
 
 			window.addEventListener("popstate", function () {
+				const usp = new URLSearchParams(location.search);
+				if (usp.get("search")) {
+					document.forms[0].search.value = usp.get("search");
+				}else{
+                    document.forms[0].search.value = '';
+                }
 				getData();
 			});
 		</script>
