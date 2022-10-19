@@ -9,6 +9,7 @@ const db = require(__dirname + "/modules/db_connect2");
 const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
 const exp = require("constants");
+const axios = require("axios");
 
 express.Jie = "您好Jie";
 
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
 	res.locals.toDatetimeString = (d) => {
 		return moment(d).format("YYYY-MM-DD HH:mm:ss");
 	};
+	res.locals.session = req.session;
 	res.locals.title = "JIE的網站";
 	next();
 });
@@ -173,6 +175,45 @@ app.get("/try-db-add2", async (req, res) => {
 // 	res.render("ab")
 // })
 app.use("/ab", require(__dirname + "/routes/address_book"));
+
+app.get("/fake-login", (req, res) => {
+	req.session.admin = {
+		id: 12,
+		account: "e25254",
+		nickname: "Jie",
+	};
+
+	res.redirect("/");
+});
+app.get("/logout", (req, res) => {
+	delete req.session.admin;
+
+	res.redirect("/");
+});
+
+app.get("/yahoo", async (req, res) => {
+	const response = await axios.get("https://tw.yahoo.com/");
+	res.send(response.data);
+});
+
+app.get("/cate", async (req, res) => {
+	const [rows] = await db.query("SELECT * FROM categories");
+	const firsts = [];
+	for (let i of rows) {
+		if (i.parent_sid === 0) {
+			firsts.push(i);
+		}
+	}
+	for (let f of firsts) {
+		for (let i of rows) {
+			if (f.sid === i.parent_sid) {
+				f.children ||= [];
+				f.children.push(i);
+			}
+		}
+	}
+	res.json(firsts);
+});
 
 app.use(express.static(__dirname + "/public"));
 // app.use(express.static(__dirname + "/node_modules/jquery/dist"))

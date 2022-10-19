@@ -4,7 +4,11 @@ const db = require(__dirname + "/../modules/db_connect2");
 const upload = require(__dirname + "/../modules/upload-img");
 
 router.use((req, res, next) => {
-	next();
+	if(req.session.admin && req.session.admin.account){
+        next();
+    } else {
+        res.status(403).send('無權訪問');
+    }
 });
 
 async function getListData(req, res) {
@@ -117,7 +121,7 @@ router.delete('/del/:sid', async (req, res)=>{
     const sql = " DELETE FROM address_book WHERE sid=?";
     const [result] = await db.query(sql, [req.params.sid]);
     
-    res.json({success: !!result.affectedRows });
+    res.json({success: !!result.affectedRows , result });
 });
 
 //console.log('-----------------------------------')
