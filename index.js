@@ -215,6 +215,33 @@ app.get("/cate", async (req, res) => {
 	res.json(firsts);
 });
 
+
+app.get('/cate2', async (req, res)=>{
+    const [rows] = await db.query("SELECT * FROM categories ");
+	const dict = {};
+    // 編輯字典
+    for(let i of rows){
+        dict[i.sid] = i;
+    }
+
+    for(let i of rows){
+        if(i.parent_sid!=0){
+            const p = dict[i.parent_sid];
+            p.children ||= [];
+            p.children.push(i);
+        }
+    }
+
+    // 把第一層拿出來
+    const firsts = [];
+    for(let i of rows){
+        if(i.parent_sid===0){
+            firsts.push(i);
+        }
+    }
+	res.json(firsts);
+})
+
 app.use(express.static(__dirname + "/public"));
 // app.use(express.static(__dirname + "/node_modules/jquery/dist"))
 app.use(express.static(__dirname + "/node_modules/bootstrap/dist"));
