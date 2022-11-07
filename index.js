@@ -10,6 +10,10 @@ const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
 const exp = require("constants");
 const axios = require("axios");
+const fileupload = require("express-fileupload");
+const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
+const morgan = require("morgan");
 
 express.Jie = "您好Jie";
 
@@ -42,6 +46,96 @@ app.use(
 		},
 	})
 );
+
+app.use(
+	fileUpload({
+		createParentPath: true,
+	})
+);
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("dev"));
+
+//讓uploads目錄公開
+// https://expressjs.com/zh-tw/starter/static-files.html
+//app.use(express.static('uploads'));
+// 如果想要改網址路徑用下面的
+// 您可以透過 /static 路徑字首，來載入 uploads 目錄中的檔案。
+app.use("/uploads", express.static("uploads"));
+
+// 單檔上傳測試
+/*--------------------------*/
+app.post("/upload-avatar", async (req, res) => {
+	try {
+		if (!req.files) {
+			res.send({
+				status: false,
+				message: "No file uploaded",
+			});
+		} else {
+			//使用輸入框的名稱來獲取上傳檔案 (例如 "avatar")
+			let avatar = req.files.avatar;
+
+			//使用 mv() 方法來移動上傳檔案到要放置的目錄裡 (例如 "uploads")
+			avatar.mv("./uploads/" + avatar.name);
+
+			//送出回應
+			res.json({
+				status: true,
+				message: "File is uploaded",
+				data: {
+					name: avatar.name,
+					mimetype: avatar.mimetype,
+					size: avatar.size,
+				},
+			});
+		}
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+/*--------------------------*/
+
+// 多檔上傳測試
+/*--------------------------*/
+app.post("/upload-photos", async (req, res) => {
+	try {
+		if (!req.files) {
+			res.json({
+				status: false,
+				message: "No file uploaded",
+			});
+		} else {
+			let data = [];
+
+			//loop all files
+			_.forEach(_.keysIn(req.files.photos), (key) => {
+				let photo = req.files.photos[key];
+
+				//move photo to uploads directory
+				photo.mv("./uploads/" + photo.name);
+
+				//push file details
+				data.push({
+					name: photo.name,
+					mimetype: photo.mimetype,
+					size: photo.size,
+				});
+			});
+
+			//return response
+			res.json({
+				status: true,
+				message: "Files are uploaded",
+				data: data,
+			});
+		}
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+/*--------------------------*/
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -215,32 +309,31 @@ app.get("/cate", async (req, res) => {
 	res.json(firsts);
 });
 
-
-app.get('/cate2', async (req, res)=>{
-    const [rows] = await db.query("SELECT * FROM categories ");
+app.get("/cate2", async (req, res) => {
+	const [rows] = await db.query("SELECT * FROM categories ");
 	const dict = {};
-    // 編輯字典
-    for(let i of rows){
-        dict[i.sid] = i;
-    }
+	// 編輯字典
+	for (let i of rows) {
+		dict[i.sid] = i;
+	}
 
-    for(let i of rows){
-        if(i.parent_sid!=0){
-            const p = dict[i.parent_sid];
-            p.children ||= [];
-            p.children.push(i);
-        }
-    }
+	for (let i of rows) {
+		if (i.parent_sid != 0) {
+			const p = dict[i.parent_sid];
+			p.children ||= [];
+			p.children.push(i);
+		}
+	}
 
-    // 把第一層拿出來
-    const firsts = [];
-    for(let i of rows){
-        if(i.parent_sid===0){
-            firsts.push(i);
-        }
-    }
+	// 把第一層拿出來
+	const firsts = [];
+	for (let i of rows) {
+		if (i.parent_sid === 0) {
+			firsts.push(i);
+		}
+	}
 	res.json(firsts);
-})
+});
 
 app.use(express.static(__dirname + "/public"));
 // app.use(express.static(__dirname + "/node_modules/jquery/dist"))

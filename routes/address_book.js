@@ -4,12 +4,12 @@ const db = require(__dirname + "/../modules/db_connect2");
 const upload = require(__dirname + "/../modules/upload-img");
 
 router.use((req, res, next) => {
-	if(req.session.admin && req.session.admin.account){
-        next();
-    } else {
-        res.status(403).send('無權訪問');
-    }
-});
+	// if(req.session.admin && req.session.admin.account){
+    //     next();
+    // } else {
+    //     res.status(403).send('無權訪問');
+    // }
+	next();});
 
 async function getListData(req, res) {
 	const perPage = 10;
