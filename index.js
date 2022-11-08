@@ -14,6 +14,9 @@ const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
 
 express.Jie = "您好Jie";
 
@@ -334,6 +337,36 @@ app.get("/cate2", async (req, res) => {
 	}
 	res.json(firsts);
 });
+
+app.post('/login-api',async(req,res)=>{
+	const output = {
+		success:false,
+		error:'帳密錯誤',
+		postData:req.body,
+		auth:{}
+	}
+	// req.body
+	const sql = "SELECT * FROM admin WHERE account=?"
+	const [rows] = await db.query(sql,[req.body.account])
+
+	if(! rows.length){
+		return res.json(output)
+	}
+	const row = rows[0]	
+
+	output.success = await bcrypt.compare(req.body.password,row['password_hash'])
+	if (output.success){
+		output.error = '登入成功'
+		const {sid,account,admin_group} = row
+		const token = jwt.sign({sid,account,admin_group},process.env.JWT_SECRET)
+		output.auth = {
+			sid,
+			account,
+			token
+		}
+	}
+	res.json(output)
+})
 
 app.use(express.static(__dirname + "/public"));
 // app.use(express.static(__dirname + "/node_modules/jquery/dist"))
